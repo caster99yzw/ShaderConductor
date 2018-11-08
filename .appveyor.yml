@@ -1,0 +1,28 @@
+version: '{branch}-{build}'
+
+clone_depth: 5
+
+platform:
+  - x64
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      GENERATOR_NAME: Visual Studio 15 2017
+
+configuration:
+  - Debug
+  - Release
+
+before_build:
+  - echo Generating project files...
+  - mkdir Build && cd Build
+  - cmake -G "%GENERATOR_NAME%" -T host=x64 -A %PLATFORM% ../
+
+build:
+  project: Build/ShaderConductor.sln
+  parallel: true
+  verbosity: minimal
+
+test_script:
+  - cmd: Build/Bin/%CONFIGURATION%/ShaderConductorTest.exe
